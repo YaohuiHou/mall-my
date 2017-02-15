@@ -1,0 +1,48 @@
+.title-bars{
+    position: relative;
+    height:44px;
+    line-height: 44px;
+    overflow: hidden;
+    background: #fff;
+    border-bottom: 1px solid #e3eaf7;
+    .back{
+        position: absolute;
+        left:0;
+        top:12px;
+        padding-left: 18px;
+        height:20px;
+        line-height: 20px;
+        font-size: 14px;
+        color:#666;
+        overflow: hidden;
+        &:before{
+            margin:4px 2px 0 0;
+            content:"";
+            width: 10px;
+            height:10px;
+            display: inline-block;
+            vertical-align: top;
+            border:1px solid;
+            border-color:#ccc transparent transparent #ccc;
+            transform: rotate(-45deg);
+        }
+    }
+    span{
+        position: absolute;
+        right: 0;
+        top: 12px;
+        padding-right: 18px;
+        height:20px;
+        line-height: 20px;
+        font-size: 14px;
+        color:#666;
+        overflow: hidden;
+    }
+    h1{
+        line-height: 44px;
+        text-align: center;
+        font-size: 16px;
+        color: #333;
+        font-weight: 400;
+    }
+}

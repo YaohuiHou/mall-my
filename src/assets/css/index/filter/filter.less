@@ -1,0 +1,50 @@
+.filter{
+    position: relative;
+    top: 0;
+    left: 0;
+    height: 44px;
+    width: 100%;
+    line-height: 44px;
+    background: #fff;
+    z-index: 7;
+    .filter-wrap{
+        display: flex;
+        > .actionsheet{
+            flex:1;
+            width: 100%;
+            .value{
+                font-size: 14px;
+                text-align: center;
+                color:#666;
+                &:after{
+                    margin:17px 0 0 10px;
+                    content:"";
+                    width:6px;
+                    height:6px;
+                    display: inline-block;
+                    vertical-align: top;
+                    border:1px solid;
+                    border-color: transparent transparent #ccc #ccc;
+                    transform: rotate(-45deg);
+                }
+            }
+            &:last-of-type{
+                border-left:1px solid #E3EAF7;
+            }
+            &.active .value{
+                color:#DA242A;
+                &:after{
+                    border-color: transparent transparent #DA242A #DA242A;
+                    transform: translate(0,4px) rotate(135deg);
+                }
+            }
+        &.current .value{
+            color: #DA242A;
+            &:after{
+                border-color: transparent transparent #DA242A #DA242A;
+            }
+        }
+        }
+    }
+}
+@import "cell.less";
