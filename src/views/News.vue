@@ -89,7 +89,7 @@
                 if(me.id != ''){
                     mid = '&mid='+me.id
                 }
-                
+
                 var ajaxRequest = new XMLHttpRequest();
                 ajaxRequest.onreadystatechange = function () {
                     if (ajaxRequest.readyState === XMLHttpRequest.DONE) {
@@ -97,13 +97,20 @@
                             me.deleteItem.ajaxDis = false;
                             var result = JSON.parse(ajaxRequest.responseText);
                             if(result.status == 1){
-                                // 取消收藏后刷新页面
-                                mallIndex.$emit('isShowToast',{
-                                    ShowToast : false,
-                                    page : 1,
-                                    Refresh : true,
-                                    toastInfo : result.errInfo
-                                })
+                                if(mid == ''){
+                                    document.querySelector('.my-news').style.display = 'none';
+                                    mallIndex.$emit('notingNews',{
+                                        isShowNothing : true
+                                    })
+                                }else{
+                                   // 取消收藏后刷新页面
+                                    mallIndex.$emit('isShowToast',{
+                                        ShowToast : false,
+                                        page : 1,
+                                        Refresh : true,
+                                        toastInfo : result.errInfo
+                                    }) 
+                                }
                             }else{
                                 mallIndex.$emit('ShowToast',{
                                     ShowToast : true,
@@ -119,7 +126,7 @@
                         }
                     }
                 };
-                ajaxRequest.open('get', url +'?uid='+ window.userid +'&user_name=12' + mid);
+                ajaxRequest.open('get', url +'?uid=1&user_name=12' + mid);
                 ajaxRequest.send();
                 me.id = '';
            },

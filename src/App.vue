@@ -30,7 +30,8 @@
 				},
 				refreshPage : false,
 				url : '',
-				loadThings : false
+				loadThings : false,
+				isShowNothing : false
 			}
 		},
 		created (){
@@ -50,7 +51,11 @@
 			mallIndex.$on('ShowToast', (text) => {
 				this.isShowToast = text.ShowToast;
 				this.ToastMsg = text.toastInfo;
-			})
+			});
+
+			mallIndex.$on('notingNews', (text) => {
+                this.isShowNothing = text.isShowNothing;
+            })
 
 			// 初始化页面
 			// 获取用户id
@@ -65,10 +70,10 @@
 			};
 
 			
-			if(!window.userid){
-				window.location.href = 'http://bbs.360che.com/m/logging.php?action=login';
-				return;	
-			};
+			// if(!window.userid){
+			// 	window.location.href = 'http://bbs.360che.com/m/logging.php?action=login';
+			// 	return;	
+			// };
 
 		},
 		mounted:function(){
@@ -85,16 +90,27 @@
 				}
 			})
 		},
-		updated:function(){
-			console.log(this.isShowToast)
+		beforeUpdate:function(){
 			if(this.loadThings){
+				this.appData.data = [];
+				this.pageNum = 1;
 				this.scrollPage(this.url);
 				this.loadThings = false
 			}
+		},
+		updated:function(){
 
-			if(this.refreshPage){				
+			if(this.refreshPage){	
+				this.appData = {
+					data : []
+				}
 				this.scrollPage(app)
 			}
+			if(this.isShowNothing){
+				this.appData.isShowNothing = true;
+				this.appData.showFooter = false;
+			}
+			
 		},
 		methods: {
 			scrollPage : function(app){
@@ -124,7 +140,7 @@
 				            		me.ajaxList = true;
 				            		if(me.appData.data.length <= 0 ){
 				            			me.appData.isShowNothing = true;
-				            			me.appData.showFooter = false;
+										me.appData.showFooter = false;
 				            		}
 				            	}
 				            }else{
@@ -135,8 +151,9 @@
 				        }
 				    }
 				};
-				ajaxRequest.open('get', this.url +'?uid='+ window.userid +'&user_name=12&page=' + me.pageNum);
+				ajaxRequest.open('get', this.url +'?uid=1&user_name=12&page=' + me.pageNum);
 				ajaxRequest.send();
+
 
 			},
 			toastMsg : function(megText){	// 弹窗

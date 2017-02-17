@@ -39,7 +39,6 @@
 <script>
     import { mallIndex } from '../index.js'
     import TitleBar from '../components/title-bar'
-    import axios from 'axios'
 
     export default {
         components: {
