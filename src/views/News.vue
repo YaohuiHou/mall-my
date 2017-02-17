@@ -62,8 +62,15 @@
                 this.changeItem = text.changeNum;
             });
 
+
+            this.urlDelivery();
+            // 改变消息状态
+            axios.get( "http://test-website-api.mall.com/message/batch-update").then(function(res){}).catch(function(err){})
+        },
+        updated : function(){   //数据变化执行
             if(this.changeItem == 1){
                 // 判断是否有id
+                this.isShowToast = false
                 if(this.id == ''){
                     this.deleteItem(this.urlAll);
                 }else{
@@ -71,52 +78,56 @@
                 }
                 
             }
-            this.urlDelivery();
-            // 改变消息状态
-            axios.get( "http://test-website-api.mall.com/message/batch-update").then(function(res){}).catch(function(err){})
-        },
-        mounted:function(){
-            
         },
         methods : {
            deleteItem : function(url){
                 var me = this,
-                    o = new FormData();
-                o.append('uid', window.userid );
+                    mid = '';
+                if(me.deleteItem.ajaxDis) return;
+                me.deleteItem.ajaxDis = true;
+                // o.append('uid', 1 );
                 if(me.id != ''){
-                    o.append('id',  me.id);
+                    mid = '&mid='+me.id
                 }
-
-                axios.get( url , o )
-                    .then(function(res){
-                        var result = JSON.parse(ajaxRequest.responseText);
-                        if(result.status == 1){
-                            // 取消收藏后刷新页面
-                            mallIndex.$emit('isShowToast',{
-                                ShowToast : false,
-                                page : 1,
-                                Refresh : true
-                            })
+                
+                var ajaxRequest = new XMLHttpRequest();
+                ajaxRequest.onreadystatechange = function () {
+                    if (ajaxRequest.readyState === XMLHttpRequest.DONE) {
+                        if (ajaxRequest.status === 200) {
+                            me.deleteItem.ajaxDis = false;
+                            var result = JSON.parse(ajaxRequest.responseText);
+                            if(result.status == 1){
+                                // 取消收藏后刷新页面
+                                mallIndex.$emit('isShowToast',{
+                                    ShowToast : false,
+                                    page : 1,
+                                    Refresh : true,
+                                    toastInfo : result.errInfo
+                                })
+                            }else{
+                                mallIndex.$emit('ShowToast',{
+                                    ShowToast : true,
+                                    toastInfo : result.errInfo
+                                })
+                            }
                         }else{
-                            mallIndex.$emit('isShowToast',{
+                            me.deleteItem.ajaxDis = false;
+                            mallIndex.$emit('ShowToast',{
                                 ShowToast : true,
-                                toastInfo : errInfo
+                                toastInfo : '\u7f51\u7edc\u4e0d\u7ed9\u529b\uff0c\u8bf7\u91cd\u8bd5'  // 网络不给力，请重试
                             })
                         }
-                    })
-                    .catch(function(err){
-                        mallIndex.$emit('isShowToast',{
-                            ShowToast : true,
-                            toastInfo : '\u7f51\u7edc\u4e0d\u7ed9\u529b\uff0c\u8bf7\u91cd\u8bd5'  // 网络不给力，请重试
-                        })
-                    })
+                    }
+                };
+                ajaxRequest.open('get', url +'?uid='+ window.userid +'&user_name=12' + mid);
+                ajaxRequest.send();
                 me.id = '';
            },
            changeDelete : function(e){
                 var event = e.target;
                 var that = this;
 
-                that.id = event.parentElement().id;
+                that.id = event.parentElement.id;
                 that.toastMsgInfo('\u786e\u8ba4\u5220\u9664\u8fd9\u6761\u4fe1\u606f\u5185\u5bb9~'); // 确认删除这条信息内容~
            },
            urlDelivery : function(){
@@ -124,7 +135,11 @@
                     url : this.allList,
                     loadSome : true
                 });
-           }
+           },
+           toastMsgInfo : function(msg){
+                this.isShowToast = true;
+                this.ToastMsg = msg;
+            }
         }
     }
 </script>

@@ -59,47 +59,59 @@
 			if(this.changeItem == 1){
 				this.cancel();
 			}
-
 			this.urlDelivery();
+		},
+		updated : function(){   //数据变化执行
+			if(this.changeItem == 1){
+				this.isShowToast = false
+				this.cancel();
+			}
 		},
 		methods : {
 			cancel : function(){
-				var me = this,
-					o = new FormData();
-				o.append('uid', window.userid );
-				o.append('id',  me.id);
+				var me = this;
+				// 	o = new FormData();
+				// o.append('uid', '1' );
+				// o.append('user_name', '12' );
+				// o.append('id',  me.id);
 
-				axios.get( "http://test-website.mall.com/user-collect/delete" , o )
-					.then(function(res){
-						var result = JSON.parse(ajaxRequest.responseText);
-			            if(result.status == 1){
-			            	// 取消收藏后刷新页面
-			            	mallIndex.$emit('isShowToast',{
-								ShowToast : false,
-								page : 1,
-								Refresh : true
-							})
-			            }else{
-			            	mallIndex.$emit('isShowToast',{
+				var ajaxRequest = new XMLHttpRequest();
+				ajaxRequest.onreadystatechange = function () {
+				    if (ajaxRequest.readyState === XMLHttpRequest.DONE) {
+				        if (ajaxRequest.status === 200) {
+				        	var result = JSON.parse(ajaxRequest.responseText);
+				            if(result.status == 1){
+
+			            		// 取消收藏后刷新页面
+				            	mallIndex.$emit('isShowToast',{
+									ShowToast : false,
+									page : 1,
+									Refresh : true,
+                                    toastInfo : result.errInfo
+								})
+
+				            }else{
+				            	mallIndex.$emit('ShowToast',{
+									ShowToast : true,
+									toastInfo : result.errInfo
+								})
+				            }
+				        }else{
+				        	mallIndex.$emit('ShowToast',{
 								ShowToast : true,
-								toastInfo : errInfo
+								toastInfo : '\u7f51\u7edc\u4e0d\u7ed9\u529b\uff0c\u8bf7\u91cd\u8bd5'  // 网络不给力，请重试
 							})
-			            }
-					})
-					.catch(function(err){
-						mallIndex.$emit('isShowToast',{
-							ShowToast : true,
-							toastInfo : '\u7f51\u7edc\u4e0d\u7ed9\u529b\uff0c\u8bf7\u91cd\u8bd5'  // 网络不给力，请重试
-						})
-					})
+				        }
+				    }
+				};
+				ajaxRequest.open('get', "http://test-website-api.mall.com/collect/delete" +'?uid='+ window.userid +'&user_name=12&id='+me.id);
+				ajaxRequest.send();
 			},
 			changeCancel : function(e){
 				var event = e.target;
 				var that = this;
-
-				that.id = event.parentElement().id;
+				that.id = event.parentElement.id;
 				that.toastMsgInfo('\u786e\u8ba4\u53d6\u6d88\u8fd9\u6761\u6536\u85cf\u4fe1\u606f~') 	// 取消收藏提示
-
 			},
 			toastMsgInfo : function(msg){
 				this.isShowToast = true;

@@ -3,7 +3,7 @@
 		<div class="toast-box">
 			<p>{{ Toast }}</p>
 			<div class="toast-btn">
-				<span class="adopt-btn" @click="isShowToast()">确定</span>
+				<span class="adopt-btn" @click="ShowToast()">确定</span>
 			</div>
 		</div>
 		<i class="toast-curtain"></i>
@@ -23,8 +23,8 @@ export default {
 	    }
 	},
 	methods : {
-		isShowToast : function(){
-			mallIndex.$emit('isShowToast',{ShowToast : false})
+		ShowToast : function(){
+			mallIndex.$emit('ShowToast',{ShowToast : false,toastInfo : ''})
 		}
 	}
 }
