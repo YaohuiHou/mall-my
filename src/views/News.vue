@@ -104,12 +104,14 @@
                                     })
                                 }else{
                                    // 取消收藏后刷新页面
+                                    me.urlDelivery();
                                     mallIndex.$emit('isShowToast',{
                                         ShowToast : false,
                                         page : 1,
                                         Refresh : true,
                                         toastInfo : result.errInfo
                                     }) 
+
                                 }
                             }else{
                                 mallIndex.$emit('ShowToast',{
@@ -126,7 +128,7 @@
                         }
                     }
                 };
-                ajaxRequest.open('get', url +'?uid=1&user_name=12' + mid);
+                ajaxRequest.open('get', url +'?uid='+ window.userid +'&user_name='+ window.nickname + mid);
                 ajaxRequest.send();
                 me.id = '';
            },

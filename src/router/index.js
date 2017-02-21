@@ -5,6 +5,7 @@ import Home from '../views/Home'
 import ColleatsView from '../views/Colleats'
 import News from '../views/News'
 import Order from '../views/Order'
+import Detail from '../views/Detail'
 
 Vue.use(Router)
 
@@ -34,6 +35,11 @@ export default new Router({
       path: '/Order',
       name: 'Order',
       component: Order
+    },
+    {
+      path: '/Detail/:id',
+      name: 'Detail',
+      component: Detail
     }
   ]
 })

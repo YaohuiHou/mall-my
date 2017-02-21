@@ -11,7 +11,6 @@
 	import Loading from 'components/loading'
 	import Toast from 'components/toast'
 	import axios from 'axios'
-
 	export default {
 		name: 'app',
 		components: {
@@ -31,15 +30,16 @@
 				refreshPage : false,
 				url : '',
 				loadThings : false,
-				isShowNothing : false
+				isShowNothing : false,
+				overLoad : false
 			}
 		},
 		created (){
 			mallIndex.$on('urlDelivery',(text) => {
 				this.url = text.url;
-				this.loadThings = text.loadSome
+				this.loadThings = text.loadSome;
+				this.overLoad = text.over;
 			})
-
 			//通过index传递select界面取到的值。
 			mallIndex.$on('isShowToast', (text) => {
 				this.isShowToast = text.ShowToast;
@@ -47,64 +47,62 @@
 				this.pageNum = text.page;
 				this.refreshPage = text.Refresh;
 			});
-
 			mallIndex.$on('ShowToast', (text) => {
 				this.isShowToast = text.ShowToast;
 				this.ToastMsg = text.toastInfo;
 			});
-
 			mallIndex.$on('notingNews', (text) => {
                 this.isShowNothing = text.isShowNothing;
             })
-
 			// 初始化页面
 			// 获取用户id
-			var userid = document.cookie.match(/AbcfN_userid=([^;$]+)/);
+			var userid = document.cookie.match(/AbcfN_ajaxuid=([^;$]+)/);
+			var nickname = document.cookie.match(/AbcfN_nickname=([^;$]+)/);
 			if(userid && userid[1]){
 				try {
 					Object.defineProperty(window,'userid',{
 						writable:false,
 						value:userid[1]
 					});	
+					Object.defineProperty(window,'nickname',{
+						writable:false,
+						value:nickname[1]
+					});	
 				} catch(e){}
 			};
-
 			
-			// if(!window.userid){
-			// 	window.location.href = 'http://bbs.360che.com/m/logging.php?action=login';
-			// 	return;	
-			// };
-
+			if(!window.userid){
+				window.location.href = 'http://bbs.360che.com/m/logging.php?action=login';
+				return;	
+			};
 		},
 		mounted:function(){
 			this.loaded=false;
-
 			// 滚动加载
 			var me = this;
 			var page = document.querySelector('.page'),
 				app = document.querySelector('#app');
 			page.addEventListener('scroll',function(){
-				if(app.getBoundingClientRect().bottom <= (window.innerHeight + 100) && !me.ajaxList){
+				if(app.getBoundingClientRect().bottom <= (window.innerHeight + 100) && !me.ajaxList && !me.overLoad){
 					me.ajaxList = true;
-					me.scrollPage(app);
+					me.scrollPage();
 				}
 			})
 		},
-		beforeUpdate:function(){
+		beforeUpdate:function(){		// 数据更新时调用
 			if(this.loadThings){
 				this.appData.data = [];
 				this.pageNum = 1;
-				this.scrollPage(this.url);
+				this.scrollPage();
 				this.loadThings = false
 			}
 		},
 		updated:function(){
-
 			if(this.refreshPage){	
 				this.appData = {
 					data : []
 				}
-				this.scrollPage(app)
+				this.scrollPage(1)
 			}
 			if(this.isShowNothing){
 				this.appData.isShowNothing = true;
@@ -113,13 +111,13 @@
 			
 		},
 		methods: {
-			scrollPage : function(app){
+			scrollPage : function(n,id){
 				var me = this,
 					o = new FormData();
 				// o.append('uid', '1' );
 				// o.append('user_name', '1' );
+				if(this.overLoad) return;
 				o.append('page', me.pageNum );
-
 				var ajaxRequest = new XMLHttpRequest();
 				ajaxRequest.onreadystatechange = function () {
 				    if (ajaxRequest.readyState === XMLHttpRequest.DONE) {
@@ -133,7 +131,6 @@
 			            		})
 			            		me.appData.isShowNothing = false;
 			            		me.appData.showFooter = true;
-
 				            	if(result.latest == 0){
 				            		me.pageNum += 1;
 				            	}else{
@@ -151,10 +148,9 @@
 				        }
 				    }
 				};
-				ajaxRequest.open('get', this.url +'?uid=1&user_name=12&page=' + me.pageNum);
+
+				ajaxRequest.open('get', this.url +'?uid='+ window.userid +'&user_name='+ window.nickname +'&page=' + me.pageNum);
 				ajaxRequest.send();
-
-
 			},
 			toastMsg : function(megText){	// 弹窗
 				this.isShowToast = true;

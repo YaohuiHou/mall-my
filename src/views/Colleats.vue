@@ -104,7 +104,7 @@
 				        }
 				    }
 				};
-				ajaxRequest.open('get', "http://test-website-api.mall.com/collect/delete?uid=1&user_name=12&id="+me.id);
+				ajaxRequest.open('get', 'http://test-website-api.mall.com/collect/delete'+'?uid='+ window.userid +'&user_name='+ window.nickname + '&id='+ me.id);
 				ajaxRequest.send();
 
 				me.changeItem = ''
